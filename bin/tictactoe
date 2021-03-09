@@ -1,3 +1,72 @@
 #!/usr/bin/env ruby
 
 require_relative '../config/environment'
+
+
+def gameplay
+  dude_first = Players::Human.new("X")
+  dude_second = Players::Human.new("O")
+  cpu = Players::Computer.new("X")
+  hal = Players::Computer.new("O")
+
+  puts "Choose a game mode (0, 1, 2, wargames):"
+  puts "0 player mode (computer vs computer)"
+  puts "1 player mode (you vs computer)"
+  puts "2 player mode (you vs a friend)"
+  puts "wargames"
+
+  choice = gets.strip
+  while !["0", "1", "2", "wargames"].include?(choice)
+    puts "Enter a valid game mode option (0, 1, 2, wargames)"
+    choice = gets.strip
+  end
+
+  case choice
+  when "0"
+    Game.new(cpu, hal).play
+  when "1"
+    puts "\nWho should go first and be \"X\"?\n1. User\n2. Computer"
+    first = ""
+    until first == "1" || first == "2"
+      puts "Enter 1 or 2"
+      first = gets.strip
+    end
+    first == "1" ? Game.new(dude_first, hal).play : Game.new(cpu, dude_second).play
+  when "2"
+    winner = Game.new().play
+  when "wargames"
+
+    x_won = 0
+    y_won = 0
+
+    100.times do
+      winner = Game.new(cpu, hal).play
+      if winner == "X"
+        x_won += 1
+      elsif winner == "Y"
+        y_won += 1
+      end
+
+      puts "\nAfter 100 games, the tally of the winners is:"
+      puts "X: #{x_won}"
+      puts "Y: #{y_won}"
+      puts "Draw: #{100 - x_won - y_won}"
+
+    end
+  end
+
+  play_again?
+end
+
+def play_again?
+  puts " "
+  again = ""
+  until again == "y" || again == "n"
+    puts "Play again? (y/n)"
+    again = gets.strip.downcase
+  end
+  puts ""
+  gameplay if again == "y"
+end
+
+gameplay
